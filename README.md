@@ -20,9 +20,9 @@ often guide usage towards coupling the symbolic part with execution.
 What if you want to test an entire system? In this case the complexity of the
 data structures involved in specific method signatures means a significant
 amount of generation time is consumed on aspects you don't care about when the
-goal is simply to produce a long of commands.
+goal is simply to produce a long sequence of commands.
 
-state-gen emphasizes symbolic generation only, and by guiding the user away from
+Thus, state-gen emphasizes symbolic generation only, and by guiding the user away from
 the specifics of the API permits the efficient generation of long command
 sequences without needing to adopt sophisticated search strategies.
 
