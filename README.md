@@ -5,7 +5,7 @@ Data-first stateful generator for Clojure
 
 ## Why state-gen?
 
-There are a already couple existing libraries for doing stateful property based
+There are already couple existing libraries for doing stateful property based
 testing in Clojure:
 
 * [stateful-check](https://github.com/czan/stateful-check/tree/master)
