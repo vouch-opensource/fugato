@@ -62,6 +62,6 @@ the next state.
 `:run?` is a function to determine whether a particular command can even be
 generated.
 
-`:valid?` during shrinking commands are random dropped. This function is used
-determine whether a command is no longer valid if a prior command has been
+`:valid?` during shrinking commands are randomly dropped. This function is used
+determine whether later commands are no longer valid if a prior command has been
 removed.
