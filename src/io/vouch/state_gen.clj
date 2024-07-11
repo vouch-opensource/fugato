@@ -6,10 +6,10 @@
 
   A `model` is a hash map with the following structure:
 
-  {:command-name-a <CommandMap>
-   :command-name-b <CommandMap> ...}
+  {:command-name-a <CommandSpecMap>
+   :command-name-b <CommandSpecMap> ...}
 
-  A `command-spec` is a <CommandMap> with the following structure:
+  A `command-spec` is a <CommandSpecMap> with the following structure:
 
   {:args       <Fn(State)->ArgsGenerator>
    :freq       <Integer>
@@ -17,7 +17,7 @@
    :run?       <Fn(State)->Boolean>
    :valid?     <Fn(State)->Boolean>}
 
-  A `state` is user specified map to store state information so that the model
+  A `state` is a user specified map to store state information so that the model
   can be used to create a sequence of commands where the generation of the
   commands depends on previously generated commands (because they changed the
   state)."
@@ -25,8 +25,7 @@
             [io.vouch.state-gen.impl :as impl]))
 
 (defn commands
-  "Given a model and an initial state, generate commands.
-   The result will be of the form:
+  "Given a model and an initial state, generate a sequence of commands:
 
    [{:command command-name :args [...]} ...]
    "
