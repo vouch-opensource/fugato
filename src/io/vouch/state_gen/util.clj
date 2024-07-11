@@ -1,6 +1,7 @@
 ;; Copyright © 2024 Vouch.io LLC
 
-(ns io.vouch.state-gen.util)
+(ns io.vouch.state-gen.util
+  (:require [clojure.test.check.rose-tree :as rose]))
 
 ;; =============================================================================
 ;; Debug Helpers
