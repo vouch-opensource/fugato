@@ -13,7 +13,7 @@ testing in Clojure:
 
 These libraries are to varying degrees inspired by features available in
 [QuickCheck](http://www.quviq.com/products/erlang-quickcheck/). Often the
-motivating examples involve stateful data structures, programming in the
+motivating examples involve stateful data structures and programming in the
 "small", so to speak. In addition, the existing literature as well libraries
 often guide usage towards coupling the symbolic part with execution.
 
