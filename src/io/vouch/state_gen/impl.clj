@@ -30,7 +30,7 @@
     true))
 
 (defn model->commands
-  "Convert a command spec into a vector of commands for generation"
+  "Convert a model into a vector of commands for generation"
   [model state]
   (reduce
     (fn [acc command-name]
@@ -69,7 +69,7 @@
     {:state init-state :commands []} commands))
 
 (defn prune-commands
-  "Given a spec and init-state prune commands that are invalid via :valid?
+  "Given a model and init-state, prune commands that are invalid via :valid?
   conditions."
   [model init-state commands]
   (:commands (prune-commands* model init-state commands)))
