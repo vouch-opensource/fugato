@@ -28,8 +28,40 @@ sequences without needing to adopt sophisticated search strategies.
 
 Once the command sequence is generated these can run however you see fit. These
 can also be written to files which can be run later as sophisticated regression 
-tests unlikely to every be written or maintained by a human. 
+tests unlikely to every be written or maintained by a human.
 
 ## Defining a Model
 
+A model is a map of command specifications:
+
+```clojure
+{:withdraw withdraw-command-spec
+ :deposit  deposit-command-spec}
+```
+
 ## Defining a Command Spec
+
+A command spec is map that looks like the following:
+
+```clojure
+{:args       args-generator
+ :freq       an-integer
+ :next-state next-state-fn
+ :run?       run?-fn
+ :valid?     valid?-fn}
+```
+
+`arg-generator` is a function that takes a state and returns a generator for
+the arguments of the command.
+
+`:freq` is an integer to set the likelihood of the command to be generated.
+
+`next-state` is a function take a state and the generated command and computes
+the next state.
+
+`run?` is a function to determine whether a particular command can even be
+generated.
+
+`valid?` during shrinking commands are random dropped. This function is used
+determine whether a command is no longer valid if a prior command has been
+removed.
