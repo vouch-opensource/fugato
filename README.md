@@ -56,17 +56,17 @@ A command spec is map that looks like the following:
  :valid?     valid?-fn}
 ```
 
-`args-generator` is a function that takes a state and returns a generator for
+`args-generator` - a function that takes a state and returns a generator for
 the arguments of the command.
 
-`:freq` is an integer to set the likelihood of the command to be generated.
+`:freq` - an integer to set the likelihood of the command to be generated.
 
-`:next-state` is a function take a state and the generated command and computes
+`:next-state` - a function take a state and the generated command and computes
 the next state.
 
-`:run?` is a function to determine whether a particular command can even be
+`:run?` - a function that takes a state to determine whether a particular command can be
 generated.
 
-`:valid?` during shrinking commands are randomly dropped. This function is used
+`:valid?` - during shrinking commands are randomly dropped. This function is used
 determine whether later commands are no longer valid if a prior command has been
 removed.
