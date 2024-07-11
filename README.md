@@ -30,6 +30,11 @@ Once the command sequence is generated these can run however you see fit. These
 can also be written to files which can be run later as sophisticated regression 
 tests unlikely to every be written or maintained by a human.
 
+In this sense state-gen is not a testing framework or methodology. It simply
+generates commands and supports shrinking. The user can leverage existing
+testing tools without having to learn new concepts beyond the task of command 
+generation.
+
 ## Defining a Model
 
 A model is a map of command specifications:
