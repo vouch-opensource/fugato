@@ -43,8 +43,7 @@
 
 (defn open [world user]
   (cond-> world
-    (and (has-key? world user)
-         (not (door-locked? world)))
+    (not (door-locked? world))
     (assoc :door :open)))
 
 (defn close [world user]
@@ -54,12 +53,14 @@
 
 (defn lock [world user]
   (cond-> world
-    (door-closed? world)
+    (and (door-closed? world)
+         (has-key? world user))
     (assoc :door :locked)))
 
 (defn unlock [world user]
   (cond-> world
-    (door-locked? world)
+    (and (door-locked? world)
+         (has-key? world user))
     (assoc :door :closed)))
 
 (defn drop-key [world user]
@@ -81,14 +82,14 @@
 ;; Unit Tests
 
 (deftest test-has-key?
-  (is (true? (has-key? world :room-1)))
-  (is (false? (has-key? world :room-2)))
-  (is (false? (has-key? world :user-a)))
-  (is (false? (has-key? world :user-b))))
+  (is (has-key? world :room-1))
+  (is (not (has-key? world :room-2)))
+  (is (not (has-key? world :user-a)))
+  (is (not (has-key? world :user-b))))
 
 (deftest test-take-key
   (let [world' (take-key world :user-a)]
-    (is (true? (has-key? world' :user-a)))))
+    (is (has-key? world' :user-a))))
 
 (deftest test-drop-key
   (let [world' (-> world
@@ -98,7 +99,17 @@
 
 (deftest test-take-key-wrong-room
   (let [world' (take-key world :user-b)]
-    (is (false? (has-key? world' :user-b)))))
+    (is (not (has-key? world' :user-b)))))
+
+(deftest test-unlock
+  (let [world' (-> world
+                 (take-key :user-a)
+                 (unlock :user-a))]
+    (is (not (door-locked? world')))))
+
+(deftest test-unlock-without-key
+  (let [world' (unlock world :user-a)]
+    (is (door-locked? world'))))
 
 (comment
 
