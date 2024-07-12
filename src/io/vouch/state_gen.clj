@@ -28,6 +28,9 @@
   "Given a model and an initial state, generate a sequence of commands:
 
    [{:command command-name :args [...]} ...]
+
+   Optionally can request a number of elements to return, or a minimum number
+   or maximum number.
    "
   ([model init-state]
    (gen/bind
