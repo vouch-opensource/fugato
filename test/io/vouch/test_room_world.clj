@@ -34,9 +34,12 @@
 ;; Actions
 
 (defn move [world user room]
-  (cond-> world
-    (door-open? world)
-    (update room conj user)))
+  (let [prev-room (user->room world user)]
+    (cond-> world
+      (door-open? world)
+      (->
+        (update room conj user)
+        (update prev-room disj user)))))
 
 (defn open [world user]
   (cond-> world
@@ -64,7 +67,7 @@
     (has-key? world user)
     (->
       (update user disj :key)
-      (update (user->room world user) conj key))))
+      (update (user->room world user) conj :key))))
 
 (defn take-key [world user]
   (let [room (user->room world user)]
@@ -78,7 +81,24 @@
 ;; Unit Tests
 
 (deftest test-has-key?
-  (is (true? (has-key? world :room-1))))
+  (is (true? (has-key? world :room-1)))
+  (is (false? (has-key? world :room-2)))
+  (is (false? (has-key? world :user-a)))
+  (is (false? (has-key? world :user-b))))
+
+(deftest test-take-key
+  (let [world' (take-key world :user-a)]
+    (is (true? (has-key? world' :user-a)))))
+
+(deftest test-drop-key
+  (let [world' (-> world
+                 (take-key :user-a)
+                 (drop-key :user-a))]
+    (is (true? (has-key? world' :room-1)))))
+
+(deftest test-take-key-wrong-room
+  (let [world' (take-key world :user-b)]
+    (is (false? (has-key? world' :user-b)))))
 
 (comment
 
