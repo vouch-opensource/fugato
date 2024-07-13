@@ -23,7 +23,7 @@
   (= :open (:door world)))
 
 (defn door-closed? [world]
-  (= :closed (:or world)))
+  (= :closed (:door world)))
 
 (defn user->room [world user]
   (if (contains? (:room-1 world) user)
@@ -109,6 +109,13 @@
 
 (deftest test-unlock-without-key
   (let [world' (unlock world :user-a)]
+    (is (door-locked? world'))))
+
+(deftest test-lock
+  (let [world' (-> world
+                 (take-key :user-a)
+                 (unlock :user-a)
+                 (lock :user-a))]
     (is (door-locked? world'))))
 
 (comment
