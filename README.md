@@ -1,6 +1,6 @@
 # fugato
 
-Data oriented stateful generator for Clojure.
+Data oriented stateful test-check generator for Clojure.
 
 ## Releases & Dependency Information
 
@@ -78,6 +78,12 @@ and control which commands are available at each step.
 `:valid?` - A function that takes state and a command. During shrinking commands 
 are dropped one by one. This function is used determine whether later commands 
 are no longer valid if a prior command has been removed.
+
+## Example
+
+The hardest part about learning how to use fugato is learning how to write
+test-check generators, so we've provided a 
+[motivating example and tutorial]().
 
 ## Contributing
 
