@@ -77,7 +77,7 @@
   (cond-> world
     (has-key? world user)
     (->
-      ;(update user disj :key)
+      (update user disj :key)
       (update (user->room world user) conj :key))))
 
 (defn take-key [world user]
@@ -164,8 +164,9 @@
 
 (defspec model-eq-reality 10
   (prop/for-all [commands (state-gen/commands model world 1 20)]
-    (let [world' (run world commands)]
-      (= world' (-> commands last meta :after)))))
+    (if (seq commands)
+      (= (run world commands) (-> commands last meta :after))
+      true)))
 
 (comment
 
