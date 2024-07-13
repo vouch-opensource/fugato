@@ -103,6 +103,8 @@
            (let [state' ((get-in model [(:command command) :next-state]) state command)]
              (gen/gen-fmap
                (fn [rose]
-                 (commands-rose model state (conj (rose/root rose) command)))
+                 (commands-rose model state
+                   (conj (rose/root rose)
+                     (with-meta command {:before state :after state'}))))
                (commands model state' (dec num-elements))))
            (gen/return '())))))))
