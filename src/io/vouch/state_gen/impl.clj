@@ -4,7 +4,7 @@
   (:require [clojure.test.check.generators :as gen]
             [clojure.test.check.rose-tree :as rose]))
 
-(def base-freq 256)
+(def base-freq 1)
 
 ;; =============================================================================
 ;; Generator Stuff
@@ -82,6 +82,9 @@
   ;; needs to be evaluated
   (gen/frequency
     (into [] (map #(freqs model state %))
+      ;; TODO: it may be that no more commands cna run, this will make
+      ;; gen/frequency fail - should also consider that the commands
+      ;; might legitimately be done (i.e. a game)
       (model->commands model state))))
 
 (defn commands-rose [model init-state commands]

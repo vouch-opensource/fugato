@@ -29,17 +29,17 @@
 
    [{:command command-name :args [...]} ...]
 
-   Optionally can request a number of elements to return, or a minimum number
-   or maximum number.
+   Optionally can request a maximum number of elements to return, or a minimum
+   and maximum.
    "
   ([model init-state]
    (gen/bind
      (gen/sized #(gen/choose 0 %))
      (fn [num-elements]
        (impl/commands model init-state num-elements))))
-  ([model init-state num-elements]
+  ([model init-state max-elements]
    (gen/bind
-     (gen/choose 0 num-elements)
+     (gen/choose 0 max-elements)
      (fn [num-elements]
        (impl/commands model init-state num-elements))))
   ([model init-state min-elements max-elements]
