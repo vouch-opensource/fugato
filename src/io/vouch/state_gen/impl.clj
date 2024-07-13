@@ -80,12 +80,10 @@
   [model state]
   ;; should this be configurable? per-step - a la maximization PropEr
   ;; needs to be evaluated
-  (gen/frequency
-    (into [] (map #(freqs model state %))
-      ;; TODO: it may be that no more commands cna run, this will make
-      ;; gen/frequency fail - should also consider that the commands
-      ;; might legitimately be done (i.e. a game)
-      (model->commands model state))))
+  (let [commands (model->commands model state)]
+    (if (seq commands)
+      (gen/frequency (into [] (map #(freqs model state %)) commands))
+      (gen/return nil))))
 
 (defn commands-rose [model init-state commands]
   (rose/make-rose commands
@@ -101,9 +99,10 @@
      (gen/return '())
      (gen/gen-bind (command-gen model state)
        (fn [rose]
-         (let [command (rose/root rose)
-               state'  ((get-in model [(:command command) :next-state]) state command)]
-           (gen/gen-fmap
-             (fn [rose]
-               (commands-rose model state (conj (rose/root rose) command)))
-             (commands model state' (dec num-elements)))))))))
+         (if-let [command (rose/root rose)]
+           (let [state' ((get-in model [(:command command) :next-state]) state command)]
+             (gen/gen-fmap
+               (fn [rose]
+                 (commands-rose model state (conj (rose/root rose) command)))
+               (commands model state' (dec num-elements))))
+           (gen/return '())))))))
