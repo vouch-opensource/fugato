@@ -18,6 +18,15 @@
 ;; =============================================================================
 ;; Helpers
 
+(defn door-locked? [state]
+  (= :locked (:door state)))
+
+(defn door-closed? [state]
+  (= :closed (:door state)))
+
+(defn door-open? [state]
+  (= :open (:door state)))
+
 (defn some-user-with-key? [state]
   (contains? (into (:user-a state) (:user-b state)) :key))
 
@@ -26,13 +35,14 @@
     (contains? (:user-a state) :key) :user-a
     (contains? (:user-b state) :key) :user-b))
 
-(defn dropped-key? [state]
-  (contains? (into (:room-1 state) (:room-2 state)) :key))
-
 (defn room-with-key [state]
   (cond
     (contains? (:room-1 state) :key) :room-1
     (contains? (:room-2 state) :key) :room-2))
+
+(defn user-and-key-in-same-room? [state]
+  (let [room (room-with-key state)]
+    (> (count (get state room)) 1)))
 
 (defn user->room [state user]
   (cond
@@ -43,30 +53,29 @@
 ;; The Model
 
 (def open-spec
-  {:run?       (fn [state] (= :closed (:door state)))
+  {:run?       door-closed?
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :open))})
 
 (def close-spec
-  {:run?       (fn [state] (= :open (:door state)))
+  {:run?       door-open?
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :closed))})
 
 (def lock-spec
-  {:run?       (fn [state] (and (some-user-with-key? state)
-                             (= :closed (:door state))))
+  {:run?       (fn [state] (and (door-closed? state)
+                                (some-user-with-key? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :locked))})
 
 (def unlock-spec
   {:run?       (fn [state] (and (some-user-with-key? state)
-                                (= :locked (:door state))))
+                                (door-locked? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
-   :next-state (fn [state _] (assoc state :door :unlocked))})
+   :next-state (fn [state _] (assoc state :door :closed))})
 
 (def take-key-spec
-  {:run?       (fn [state]
-                 (dropped-key? state))
+  {:run?       user-and-key-in-same-room?
    :args       (fn [state]
                  (gen/tuple
                    (gen/elements
@@ -91,7 +100,8 @@
    :room-2 :room-1})
 
 (def move-spec
-  {:run?       (fn [state] (= :open (:door state)))
+  {:freq       2
+   :run?       (fn [state] (= :open (:door state)))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state {:keys [args]}]
                  (let [user (first args)
@@ -107,13 +117,14 @@
    :lock      lock-spec
    :unlock    unlock-spec
    :take-key  take-key-spec
+   :drop-key  drop-key-spec
    :move      move-spec})
 
 (comment
 
   (require '[clojure.pprint :refer [pprint]])
-  (pprint (last (gen/sample (state-gen/commands model init-state 3) 10)))
-  (pprint (last (gen/sample (state-gen/commands model init-state 10) 10)))
+  (pprint (last (gen/sample (state-gen/commands model init-state 20 30) 10)))
+  (pprint (last (gen/sample (state-gen/commands model init-state 10) 100)))
 
   ;; checking some things
   (state-gen.impl/model->commands model init-state)
