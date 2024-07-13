@@ -2,7 +2,8 @@
 
 (ns io.vouch.test-state-gen
   (:require [clojure.test.check.generators :as gen]
-            [io.vouch.state-gen :as state-gen]))
+            [io.vouch.state-gen :as state-gen]
+            [io.vouch.state-gen.impl :as state-gen.impl]))
 
 ;; =============================================================================
 ;; The State
@@ -44,7 +45,7 @@
 (def open-spec
   {:run?       (fn [state] (= :closed (:door state)))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
-   :next-state (fn [state command] (assoc state :door :opened))})
+   :next-state (fn [state command] (assoc state :door :open))})
 
 (def close-spec
   {:run?       (fn [state] (= :open (:door state)))
@@ -59,9 +60,9 @@
 
 (def unlock-spec
   {:run?       (fn [state] (and (some-user-with-key? state)
-                             (= :locked (:door state))))
+                                (= :locked (:door state))))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
-   :next-state (fn [state _] (assoc state :door :locked))})
+   :next-state (fn [state _] (assoc state :door :unlocked))})
 
 (def take-key-spec
   {:run?       (fn [state]
@@ -110,6 +111,19 @@
 
 (comment
 
-  (gen/sample (state-gen/commands model init-state 5) 1)
+  (require '[clojure.pprint :refer [pprint]])
+  (pprint (last (gen/sample (state-gen/commands model init-state 3) 10)))
+  (pprint (last (gen/sample (state-gen/commands model init-state 10) 10)))
+
+  ;; checking some things
+  (state-gen.impl/model->commands model init-state)
+  (state-gen.impl/model->commands model
+    (-> init-state
+      (update :user-a conj :key)
+      (update :room-1 disj :key)))
+
+  ;; this seems ok
+  (into [] (map #(state-gen.impl/freqs model init-state %))
+    (state-gen.impl/model->commands model init-state))
 
   )
