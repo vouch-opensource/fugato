@@ -1,7 +1,12 @@
 ;; Copyright © 2024 Vouch.io LLC
 
 (ns io.vouch.test-room-world
-  (:require [clojure.test :as test :refer [deftest is]]))
+  (:require [clojure.test :as test :refer [deftest is]]
+            [clojure.test.check.properties :as prop]
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.generators :as gen]
+            [io.vouch.state-gen :as state-gen]
+            [io.vouch.test-state-gen :as test.state-gen :refer [model]]))
 
 (def world
   {:user-a #{}
@@ -72,7 +77,7 @@
   (cond-> world
     (has-key? world user)
     (->
-      (update user disj :key)
+      ;(update user disj :key)
       (update (user->room world user) conj :key))))
 
 (defn take-key [world user]
@@ -139,8 +144,35 @@
                  (close :user-a))]
     (is (door-closed? world'))))
 
+;; =============================================================================
+;; Property Tests
+
+(def command->fn
+  {:open     open
+   :close    close
+   :lock     lock
+   :unlock   unlock
+   :take-key take-key
+   :drop-key drop-key
+   :move     move})
+
+(defn run [state commands]
+  (reduce
+    (fn [state {:keys [command args]}]
+      (apply (get command->fn command) state args))
+    state commands))
+
+(defspec model-eq-reality 10
+  (prop/for-all [commands (state-gen/commands model world 1 20)]
+    (let [world' (run world commands)]
+      (= world' (-> commands last meta :after)))))
+
 (comment
 
   (test/run-tests)
+
+  (let [xs     (last (gen/sample (state-gen/commands model world 10 20) 10))
+        world' (run world xs)]
+    (println world' (-> xs last meta :after)))
 
   )

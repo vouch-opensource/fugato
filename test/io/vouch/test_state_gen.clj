@@ -60,27 +60,27 @@
   {:run?       door-closed?
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :open))
-   :valid?     door-closed?})
+   :valid?     (fn [state command] (door-closed? state))})
 
 (def close-spec
   {:run?       door-open?
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :closed))
-   :valid?     door-open?})
+   :valid?     (fn [state command] (door-open? state))})
 
 (def lock-spec
   {:run?       (fn [state] (and (door-closed? state)
                                 (some-user-with-key? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :locked))
-   :valid?     door-closed-and-user-has-key?})
+   :valid?     (fn [state {[user] :args}] (door-closed-and-user-has-key? state user))})
 
 (def unlock-spec
   {:run?       (fn [state] (and (some-user-with-key? state)
                                 (door-locked? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :closed))
-   :valid?     door-closed-and-user-has-key?})
+   :valid?     (fn [state {[user] :args}] (door-closed-and-user-has-key? state user))})
 
 (def take-key-spec
   {:run?       user-and-key-in-same-room?
@@ -138,7 +138,7 @@
 
   (require '[clojure.pprint :refer [pprint]])
   (pprint (last (gen/sample (state-gen/commands model init-state 20 30) 10)))
-  (pprint (last (gen/sample (state-gen/commands model init-state 10) 100)))
+  (pprint (last (gen/sample (state-gen/commaands model init-state 10) 100)))
 
   ;; checking some things
   (state-gen.impl/model->commands model init-state)
