@@ -1,9 +1,10 @@
-# state-gen
-Data-first stateful generator for Clojure
+# fugato
+
+Data oriented stateful generator for Clojure.
 
 ## Releases & Dependency Information
 
-## Why state-gen?
+## Why fugato?
 
 There are already a couple existing libraries for doing stateful property based
 testing in Clojure:
@@ -15,19 +16,20 @@ These libraries are to varying degrees inspired by features available in
 [QuickCheck](http://www.quviq.com/products/erlang-quickcheck/). Often the
 motivating examples involve stateful data structures and programming in the
 "small", so to speak. In addition, the existing literature as well libraries
-often guide usage towards coupling the symbolic part with execution.
+couple the underlying symbolic generation with direct execution against a 
+concrete API.
 
-What if you want to test an entire system? In this case the complexity of the
-data structures involved in specific method signatures means a significant
-amount of generation time is consumed on aspects you don't care about when the
+What if you want to test an entire system? In this case, the complexity of the
+data structures involved in specific API method signatures means a significant
+amount of generation time is consumed on details you don't care about when the
 goal is simply to produce a long sequence of commands.
 
-Thus, state-gen emphasizes symbolic generation only, and by guiding the user away from
+Thus, fugato emphasizes symbolic generation only, and by guiding the user away from
 the specifics of the API permits the efficient generation of long command
 sequences without needing to adopt sophisticated search strategies.
 
 Once the command sequence is generated these be can run however you see fit.
-In this sense state-gen is not a testing framework or even a methodology. It simply
+In this sense fugato is not a testing framework or even a methodology. It simply
 generates commands and supports shrinking. The user can leverage existing
 testing tools without having to learn new concepts beyond the task of command 
 generation.
@@ -43,7 +45,7 @@ A model is a map of command specifications:
 
 ## Defining a Command Spec
 
-A command spec is map that looks like the following:
+A command spec is a map that looks like the following:
 
 ```clojure
 {:args       args-generator

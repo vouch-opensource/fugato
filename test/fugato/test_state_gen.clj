@@ -1,9 +1,9 @@
 ;; Copyright © 2024 Vouch.io LLC
 
-(ns io.vouch.test-state-gen
+(ns fugato.test-state-gen
   (:require [clojure.test.check.generators :as gen]
-            [io.vouch.state-gen :as state-gen]
-            [io.vouch.state-gen.impl :as state-gen.impl]))
+            [fugato.core :as fugato]
+            [fugato.impl :as fugato.impl]))
 
 ;; =============================================================================
 ;; The State
@@ -137,18 +137,18 @@
 (comment
 
   (require '[clojure.pprint :refer [pprint]])
-  (pprint (last (gen/sample (state-gen/commands model init-state 20 30) 10)))
-  (pprint (last (gen/sample (state-gen/commaands model init-state 10) 100)))
+  (pprint (last (gen/sample (fugato/commands model init-state 20 30) 10)))
+  (pprint (last (gen/sample (fugato/commaands model init-state 10) 100)))
 
   ;; checking some things
-  (state-gen.impl/model->commands model init-state)
-  (state-gen.impl/model->commands model
+  (fugato.impl/model->commands model init-state)
+  (fugato.impl/model->commands model
     (-> init-state
       (update :user-a conj :key)
       (update :room-1 disj :key)))
 
   ;; this seems ok
-  (into [] (map #(state-gen.impl/freqs model init-state %))
-    (state-gen.impl/model->commands model init-state))
+  (into [] (map #(fugato.impl/freqs model init-state %))
+    (fugato.impl/model->commands model init-state))
 
   )

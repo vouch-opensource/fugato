@@ -1,6 +1,6 @@
 ;; Copyright © 2024 Vouch.io LLC
 
-(ns io.vouch.state-gen.util
+(ns fugato.util
   (:require [clojure.test.check.rose-tree :as rose]))
 
 ;; =============================================================================

@@ -1,12 +1,12 @@
 ;; Copyright © 2024 Vouch.io LLC
 
-(ns io.vouch.test-room-world
+(ns fugato.test-room-world
   (:require [clojure.test :as test :refer [deftest is]]
             [clojure.test.check.properties :as prop]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.generators :as gen]
-            [io.vouch.state-gen :as state-gen]
-            [io.vouch.test-state-gen :as test.state-gen :refer [model]]))
+            [fugato.core :as fugato]
+            [fugato.test-state-gen :as fugato.state-gen :refer [model]]))
 
 (def world
   {:user-a #{}
@@ -163,7 +163,7 @@
     state commands))
 
 (defspec model-eq-reality 10
-  (prop/for-all [commands (state-gen/commands model world 1 20)]
+  (prop/for-all [commands (fugato/commands model world 1 20)]
     (if (seq commands)
       (= (run world commands) (-> commands last meta :after))
       true)))
@@ -172,7 +172,7 @@
 
   (test/run-tests)
 
-  (let [xs     (last (gen/sample (state-gen/commands model world 10 20) 10))
+  (let [xs     (last (gen/sample (fugato/commands model world 10 20) 10))
         world' (run world xs)]
     (println world' (-> xs last meta :after)))
 

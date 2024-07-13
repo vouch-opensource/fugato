@@ -1,6 +1,6 @@
 ;; Copyright © 2024 Vouch.io LLC
 
-(ns io.vouch.state-gen
+(ns fugato.core
   "Data oriented stateful generative testing library for Clojure with shrinking
    support.
 
@@ -13,16 +13,22 @@
 
   {:args       <Fn(State)->ArgsGenerator>
    :freq       <Integer>
-   :next-state <Fn(State, Args)->State>
+   :next-state <Fn(State, CommandMap)->State>
    :run?       <Fn(State)->Boolean>
-   :valid?     <Fn(State)->Boolean>}
+   :valid?     <Fn(State, CommandMap)->Boolean>}
+
+  A `command` has the following structure:
+
+  {:command :a-name :args [...]}
+
+  It is not strictly necessary for `:args` to be vector but recommended.
 
   A `state` is a user specified map to store state information so that the model
   can be used to create a sequence of commands where the generation of the
   commands depends on previously generated commands (because they changed the
   state)."
   (:require [clojure.test.check.generators :as gen]
-            [io.vouch.state-gen.impl :as impl]))
+            [fugato.impl :as impl]))
 
 (defn commands
   "Given a model and an initial state, generate a sequence of commands:
