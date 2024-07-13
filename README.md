@@ -26,11 +26,8 @@ Thus, state-gen emphasizes symbolic generation only, and by guiding the user awa
 the specifics of the API permits the efficient generation of long command
 sequences without needing to adopt sophisticated search strategies.
 
-Once the command sequence is generated these can run however you see fit. These
-can also be written to files which can be run later as sophisticated regression 
-tests unlikely to every be written or maintained by a human.
-
-In this sense state-gen is not a testing framework or methodology. It simply
+Once the command sequence is generated these be can run however you see fit.
+In this sense state-gen is not a testing framework or even a methodology. It simply
 generates commands and supports shrinking. The user can leverage existing
 testing tools without having to learn new concepts beyond the task of command 
 generation.
@@ -57,16 +54,19 @@ A command spec is map that looks like the following:
 ```
 
 `args-generator` - a function that takes a state and returns a generator for
-the arguments of the command.
+the arguments of the command. Only this part requires a basic understanding how
+`clojure.test.check.generators` works.
 
 `:freq` - an integer to set the likelihood of the command to be generated.
+Defaults to `1`.
 
 `:next-state` - a function take a state and the generated command and computes
 the next state.
 
 `:run?` - a function that takes a state to determine whether a particular command can be
-generated.
+generated. Instead of randomly generating commands, you can inspect the state
+and control which commands are available at each step.
 
-`:valid?` - during shrinking commands are randomly dropped. This function is used
+`:valid?` - during shrinking commands are dropped one by one. This function is used
 determine whether later commands are no longer valid if a prior command has been
 removed.
