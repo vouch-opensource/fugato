@@ -34,6 +34,12 @@ generates commands and supports shrinking. The user can leverage existing
 testing tools without having to learn new concepts beyond the task of command 
 generation.
 
+Since fugato is abstract, the focus is primarily on modeling your domain. In
+particular since there is no pressure to program against any real interface, it's
+natural to model complex scenarios involving multiple actors and
+multiple manipulatable objects with complex relationships. Once the modeling
+is done you can choose how to run the commands against your real system.
+
 ## Defining a Model
 
 A model is a map of command specifications:
@@ -72,3 +78,23 @@ and control which commands are available at each step.
 `:valid?` - A function that takes state and a command. During shrinking commands 
 are dropped one by one. This function is used determine whether later commands 
 are no longer valid if a prior command has been removed.
+
+## Contributing
+
+Currently fugato is only taking bug reports. If you find a bug or would like
+to see an enhancement that aligns with the following design principles
+please file a Github issue!
+
+#### Design Principles
+
+* Symbolic generation only. Bring your own runner!
+
+## License ##
+
+    Copyright (c) Vouch, Inc. All rights reserved. The use and
+    distribution terms for this software are covered by the Eclipse
+    Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+    which can be found in the file epl-v10.html at the root of this
+    distribution. By using this software in any fashion, you are
+    agreeing to be bound by the terms of this license. You must
+    not remove this notice, or any other, from this software.
