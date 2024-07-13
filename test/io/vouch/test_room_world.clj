@@ -33,8 +33,13 @@
 ;; =============================================================================
 ;; Actions
 
-(defn move [world user room]
-  (let [prev-room (user->room world user)]
+(def next-room
+  {:room-1 :room-2
+   :room-2 :room-1})
+
+(defn move [world user]
+  (let [prev-room (user->room world user)
+        room      (prev-room next-room)]
     (cond-> world
       (door-open? world)
       (->
@@ -117,6 +122,14 @@
                  (unlock :user-a)
                  (lock :user-a))]
     (is (door-locked? world'))))
+
+(deftest test-move
+  (let [world' (-> world
+                 (take-key :user-a)
+                 (unlock :user-a)
+                 (open :user-a)
+                 (move :user-a))]
+    (is (= :room-2 (user->room world' :user-a)))))
 
 (comment
 
