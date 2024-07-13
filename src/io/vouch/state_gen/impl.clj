@@ -14,7 +14,9 @@
   [spec state {:keys [command]}]
   (gen/hash-map
     :command (gen/return command)
-    :args    ((get-in spec [command :args]) state)))
+    :args    ((get-in spec [command :args]
+                (constantly (gen/return [])))
+              state)))
 
 (defn freqs
   "Compute a likelihood for a command."
