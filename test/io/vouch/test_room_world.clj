@@ -54,7 +54,7 @@
 (defn close [world user]
   (cond-> world
     (door-open? world)
-    (assoc :door :open)))
+    (assoc :door :closed)))
 
 (defn lock [world user]
   (cond-> world
@@ -130,6 +130,14 @@
                  (open :user-a)
                  (move :user-a))]
     (is (= :room-2 (user->room world' :user-a)))))
+
+(deftest test-close
+  (let [world' (-> world
+                 (take-key :user-a)
+                 (unlock :user-a)
+                 (open :user-a)
+                 (close :user-a))]
+    (is (door-closed? world'))))
 
 (comment
 
