@@ -6,5 +6,5 @@
                                     {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                      :sha     "7284cda41fb9edc0f3bc6b6185cfb7138fc8a023"}}}
              :cljs   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}
-                      :main-opts ["-m" "cljs.main" "-re" "node" "-r"]}
+                      :main-opts ["-m" "cljs.main" "-d" "target" "-re" "node" "-r"]}
              :unit   {:main-opts ["-m" "cognitect.test-runner" "-r" "io.vouch.*"]}}}

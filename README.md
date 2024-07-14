@@ -1,6 +1,6 @@
 # fugato
 
-Data oriented stateful test-check generator for Clojure.
+Data oriented stateful test-check generator for Clojure & ClojureScript.
 
 ## Releases & Dependency Information
 
