@@ -1,8 +1,9 @@
 {:paths     ["src" "resources"]
- :deps      {org.clojure/test.check          {:mvn/version "1.1.1"}}
+ :deps      {org.clojure/test.check {:mvn/version "1.1.1"}}
  :aliases   {:test   {:extra-paths ["test"]
                       :jvm-opts    ["-Xms2g" "-Xmx4g" "-Dclojure.main.report=stderr"]
                       :extra-deps  {com.cognitect/test-runner
                                     {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                      :sha     "7284cda41fb9edc0f3bc6b6185cfb7138fc8a023"}}}
+             :cljs   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.12"}}}
              :unit   {:main-opts ["-m" "cognitect.test-runner" "-r" "io.vouch.*"]}}}
