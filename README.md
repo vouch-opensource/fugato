@@ -85,7 +85,7 @@ command has been removed.
 
 The hardest part about learning how to use fugato is learning how to write
 test-check generators, so we've provided a 
-[motivating example and tutorial]().
+[motivating example and tutorial](https://github.com/vouch-opensource/fugato/wiki/Guide-%26-Tutorial).
 
 ## Contributing
 
