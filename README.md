@@ -75,9 +75,11 @@ the next state.
 generated. Instead of randomly generating commands, you can inspect the state
 and control which commands are available at each step.
 
-`:valid?` - A function that takes state and a command. During shrinking commands 
-are dropped one by one. This function is used determine whether later commands 
-are no longer valid if a prior command has been removed.
+`:valid?` - A function that takes state and a command a determines whether a command
+should discard during shrinking (the process by which a minimal failing command
+sequence is discovered) During shrinking commands are dropped one by one. This 
+function is used determine whether later commands are no longer valid if a prior 
+command has been removed.
 
 ## Example
 
