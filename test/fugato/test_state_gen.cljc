@@ -57,13 +57,13 @@
 ;; The Model
 
 (def open-spec
-  {:run?       door-closed?
+  {:run?       (fn [state] (door-closed? state))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :open))
    :valid?     (fn [state command] (door-closed? state))})
 
 (def close-spec
-  {:run?       door-open?
+  {:run?       (fn [state] (door-open? state))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :closed))
    :valid?     (fn [state command] (door-open? state))})
@@ -72,39 +72,39 @@
   {:run?       (fn [state] (and (door-closed? state)
                                 (some-user-with-key? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
-   :next-state (fn [state _] (assoc state :door :locked))
-   :valid?     (fn [state {[user] :args}] (door-closed-and-user-has-key? state user))})
+   :next-state (fn [state command] (assoc state :door :locked))
+   :valid?     (fn [state {[user] :args :as commmand}]
+                 (door-closed-and-user-has-key? state user))})
 
 (def unlock-spec
   {:run?       (fn [state] (and (some-user-with-key? state)
                                 (door-locked? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :closed))
-   :valid?     (fn [state {[user] :args}] (door-closed-and-user-has-key? state user))})
+   :valid?     (fn [state {[user] :args :as command}]
+                 (door-closed-and-user-has-key? state user))})
 
 (def take-key-spec
-  {:run?       user-and-key-in-same-room?
+  {:run?       (fn [state] (user-and-key-in-same-room? state))
    :args       (fn [state]
                  (gen/tuple
                    (gen/elements
                      (disj (get state (room-with-key state)) :key))))
-   :next-state (fn [state {:keys [args]}]
-                 (let [user (first args)]
-                   (-> state
-                     (update user conj :key)
-                     (update (user->room state user) disj :key))))
-   :valid?     (fn [state {[user] :args}]
+   :next-state (fn [state {[user] :args :as command}]
+                 (-> state
+                   (update user conj :key)
+                   (update (user->room state user) disj :key)))
+   :valid?     (fn [state {[user] :args :as command}]
                  (= (user->room state user)
                     (room-with-key state)))})
 
 (def drop-key-spec
   {:run?       (fn [state] (some-user-with-key? state))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
-   :next-state (fn [state {:keys [args]}]
-                 (let [user (first args)]
-                   (-> state
-                     (update user disj :key)
-                     (update (user->room state user) conj :key))))
+   :next-state (fn [state {[user] :args :as command}]
+                 (-> state
+                   (update user disj :key)
+                   (update (user->room state user) conj :key)))
    :valid?     (fn [state {[user] :args}]
                  (= user (user-with-key state)))})
 
@@ -116,9 +116,8 @@
   {:freq       2
    :run?       (fn [state] (= :open (:door state)))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
-   :next-state (fn [state {:keys [args]}]
-                 (let [user (first args)
-                       prev-room (user->room state user)
+   :next-state (fn [state {[user] :args :as command}]
+                 (let [prev-room (user->room state user)
                        room (prev-room next-room)]
                    (-> state
                      (update prev-room disj user)
