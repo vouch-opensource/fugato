@@ -42,7 +42,7 @@
   {:room-1 :room-2
    :room-2 :room-1})
 
-(defn move [world user]
+(defn move [world user room]
   (let [prev-room (user->room world user)
         room      (prev-room next-room)]
     (cond-> world
@@ -51,23 +51,23 @@
         (update room conj user)
         (update prev-room disj user)))))
 
-(defn open [world user]
+(defn open-door [world user]
   (cond-> world
     (not (door-locked? world))
     (assoc :door :open)))
 
-(defn close [world user]
+(defn close-door [world user]
   (cond-> world
     (door-open? world)
     (assoc :door :closed)))
 
-(defn lock [world user]
+(defn lock-door [world user]
   (cond-> world
     (and (door-closed? world)
          (has-key? world user))
     (assoc :door :locked)))
 
-(defn unlock [world user]
+(defn unlock-door [world user]
   (cond-> world
     (and (door-locked? world)
          (has-key? world user))
@@ -114,52 +114,54 @@
 (deftest test-unlock
   (let [world' (-> world
                  (take-key :user-a)
-                 (unlock :user-a))]
+                 (unlock-door :user-a))]
     (is (not (door-locked? world')))))
 
 (deftest test-unlock-without-key
-  (let [world' (unlock world :user-a)]
+  (let [world' (unlock-door world :user-a)]
     (is (door-locked? world'))))
 
 (deftest test-lock
   (let [world' (-> world
                  (take-key :user-a)
-                 (unlock :user-a)
-                 (lock :user-a))]
+                 (unlock-door :user-a)
+                 (lock-door :user-a))]
     (is (door-locked? world'))))
 
 (deftest test-move
   (let [world' (-> world
                  (take-key :user-a)
-                 (unlock :user-a)
-                 (open :user-a)
-                 (move :user-a))]
+                 (unlock-door :user-a)
+                 (open-door :user-a)
+                 (move :user-a :room-2))]
     (is (= :room-2 (user->room world' :user-a)))))
 
 (deftest test-close
   (let [world' (-> world
                  (take-key :user-a)
-                 (unlock :user-a)
-                 (open :user-a)
-                 (close :user-a))]
+                 (unlock-door :user-a)
+                 (open-door :user-a)
+                 (close-door :user-a))]
     (is (door-closed? world'))))
 
 ;; =============================================================================
 ;; Property Tests
 
 (def command->fn
-  {:open     open
-   :close    close
-   :lock     lock
-   :unlock   unlock
-   :take-key take-key
-   :drop-key drop-key
-   :move     move})
+  {:open-door   open-door
+   :close-door  close-door
+   :lock-door   lock-door
+   :unlock-door unlock-door
+   :take-key    take-key
+   :drop-key    drop-key
+   :move        move})
 
 (defn run [state commands]
   (reduce
     (fn [state {:keys [command args]}]
-      (apply (get command->fn command) state args))
+      (if-let [fn (get command->fn command)]
+        (apply fn state args)
+        (throw (Exception. (str "Unknown command: " command ", args:" args)))))
     state commands))
 
 (defspec model-eq-reality 10

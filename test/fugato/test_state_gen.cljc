@@ -115,23 +115,28 @@
 (def move-spec
   {:freq       2
    :run?       (fn [state] (= :open (:door state)))
-   :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
+   :args       (fn [state]
+                 (gen/bind (gen/elements [:user-a :user-b])
+                   (fn [user]
+                     (gen/tuple
+                       (gen/return user)
+                       (gen/return (next-room (user->room state user)))))))
    :next-state (fn [state {[user] :args :as command}]
                  (let [prev-room (user->room state user)
                        room (prev-room next-room)]
                    (-> state
                      (update prev-room disj user)
                      (update room conj user))))
-   :valid?     door-open?})
+   :valid? door-open?})
 
 (def model
-  {:open      open-spec
-   :close     close-spec
-   :lock      lock-spec
-   :unlock    unlock-spec
-   :take-key  take-key-spec
-   :drop-key  drop-key-spec
-   :move      move-spec})
+  {:open-door   open-spec
+   :close-door  close-spec
+   :lock-door   lock-spec
+   :unlock-door unlock-spec
+   :take-key    take-key-spec
+   :drop-key    drop-key-spec
+   :move        move-spec})
 
 (comment
 
