@@ -127,7 +127,7 @@
                    (-> state
                      (update prev-room disj user)
                      (update room conj user))))
-   :valid? door-open?})
+   :valid?     (fn [state command] (door-open? state))})
 
 (def model
   {:open-door   open-spec
