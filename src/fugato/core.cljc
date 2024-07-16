@@ -52,4 +52,4 @@
    (gen/bind
      (gen/choose min-elements max-elements)
      (fn [num-elements]
-       (impl/commands model init-state num-elements)))))
+       (impl/commands model init-state num-elements min-elements)))))

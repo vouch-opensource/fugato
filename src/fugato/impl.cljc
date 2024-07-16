@@ -85,16 +85,20 @@
       (gen/frequency (into [] (map #(freqs model state %)) commands))
       (gen/return nil))))
 
-(defn commands-rose [model init-state commands]
+(defn commands-rose
+  [model init-state commands min-elements]
   (rose/make-rose commands
-    (map
-      (comp
-        #(commands-rose model init-state %)
-        #(prune-commands model init-state %))
-      (all-drop1 commands))))
+    (when (> (count commands) min-elements)
+      (map
+        (comp
+          #(commands-rose model init-state % min-elements)
+          #(prune-commands model init-state %))
+        (all-drop1 commands)))))
 
 (defn commands
   ([model state num-elements]
+   (commands model state num-elements 0))
+  ([model state num-elements min-elements]
    (if (zero? num-elements)
      (gen/return '())
      (gen/gen-bind (command-gen model state)
@@ -105,6 +109,7 @@
                (fn [rose]
                  (commands-rose model state
                    (conj (rose/root rose)
-                     (with-meta command {:before state :after state'}))))
-               (commands model state' (dec num-elements))))
+                     (with-meta command {:before state :after state'}))
+                   min-elements))
+               (commands model state' (dec num-elements) min-elements)))
            (gen/return '())))))))
