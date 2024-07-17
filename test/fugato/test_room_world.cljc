@@ -54,7 +54,8 @@
 
 (defn open-door [world user]
   (cond-> world
-    (not (door-locked? world))
+    (and (has-key? world user)
+         (not (door-locked? world)))
     (assoc :door :open)))
 
 (defn close-door [world user]
