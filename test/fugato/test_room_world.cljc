@@ -2,6 +2,7 @@
 
 (ns fugato.test-room-world
   (:require [clojure.test :as test :refer [deftest is]]
+            [clojure.test.check :as test.check]
             [clojure.test.check.properties :as prop]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.generators :as gen]
@@ -164,18 +165,30 @@
         (throw (Exception. (str "Unknown command: " command ", args:" args)))))
     state commands))
 
-(defspec model-eq-reality 10
-  (prop/for-all [commands (fugato/commands model world 1 20)]
-    (if (seq commands)
-      (= (run world commands) (-> commands last meta :after))
-      true)))
+(def state-eq
+  (prop/for-all [commands (fugato/commands model world 10 1)]
+    (= (run world commands) (-> commands last meta :after))))
+
+(defspec model-eq-reality 10 state-eq)
 
 (comment
 
+  (require '[clojure.pprint :refer [pprint]])
   (test/run-tests)
+
+  ;; just verifying that we can reuse the seed
+  (test.check/quick-check 10 state-eq
+    :seed 1721227011247)
+
+  (gen/generate (fugato/commands model world 1))
+  (gen/generate (gen/vector gen/int 2) )
 
   (let [xs     (last (gen/sample (fugato/commands model world 10 20) 10))
         world' (run world xs)]
     (println world' (-> xs last meta :after)))
+
+  (gen/generate gen/int 200000 1721219543681)
+
+  (gen/generate (gen/vector gen/int 2 50))
 
   )
