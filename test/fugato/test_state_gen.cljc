@@ -137,22 +137,3 @@
    :take-key    take-key-spec
    :drop-key    drop-key-spec
    :move        move-spec})
-
-(comment
-
-  (require '[clojure.pprint :refer [pprint]])
-  (pprint (last (gen/sample (fugato/commands model init-state 20 30) 10)))
-  (pprint (last (gen/sample (fugato/commaands model init-state 10) 100)))
-
-  ;; checking some things
-  (fugato.impl/model->commands model init-state)
-  (fugato.impl/model->commands model
-    (-> init-state
-      (update :user-a conj :key)
-      (update :room-1 disj :key)))
-
-  ;; this seems ok
-  (into [] (map #(fugato.impl/freqs model init-state %))
-    (fugato.impl/model->commands model init-state))
-
-  )
