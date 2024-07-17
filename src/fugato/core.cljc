@@ -35,21 +35,18 @@
 
    [{:command command-name :args [...]} ...]
 
-   Optionally can request a maximum number of elements to return, or a minimum
-   and maximum.
-   "
+   Can request a minimum number of elements to start quickly with interesting
+   sequences. Can request min-shrink to avoid testing no commands or two few
+   commands."
   ([model init-state]
    (gen/bind
      (gen/sized #(gen/choose 0 %))
      (fn [num-elements]
        (impl/commands model init-state num-elements))))
-  ([model init-state max-elements]
+  ([model init-state min-elements]
+   (commands model init-state min-elements 0))
+  ([model init-state min-elements min-shrink]
    (gen/bind
-     (gen/choose 0 max-elements)
+     (gen/sized #(gen/choose min-elements (+ min-elements %)))
      (fn [num-elements]
-       (impl/commands model init-state num-elements))))
-  ([model init-state min-elements max-elements]
-   (gen/bind
-     (gen/choose min-elements max-elements)
-     (fn [num-elements]
-       (impl/commands model init-state num-elements min-elements)))))
+       (impl/commands model init-state num-elements min-shrink)))))
