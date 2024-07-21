@@ -54,8 +54,7 @@
 
 (defn open-door [world user]
   (cond-> world
-    (and (has-key? world user)
-         (not (door-locked? world)))
+    (not (door-locked? world))
     (assoc :door :open)))
 
 (defn close-door [world user]
@@ -176,11 +175,6 @@
 
   (require '[clojure.pprint :refer [pprint]])
 
-  ;; TODO: the failing scenario always involves :user-b opening the door
-  ;; but smallest is always wrong, sometimes:
-  ;; 1. empty command list
-  ;; 2. command sequence w/ only :take-key
-  ;; 3. command sequence w/o shrinking at all
   (test/run-tests)
 
   ;; just verifying that we can reuse the seed

@@ -87,13 +87,15 @@
 
 (defn commands-rose
   [model init-state commands min-elements]
-  (rose/make-rose commands
-    (when (> (count commands) min-elements)
-      (map
-        (comp
-          #(commands-rose model init-state % min-elements)
-          #(prune-commands model init-state %))
-        (all-drop1 commands)))))
+  (when (seq commands)
+    (rose/make-rose commands
+      (when (> (count commands) min-elements)
+        (remove nil?
+          (map
+            (comp
+              #(commands-rose model init-state % min-elements)
+              #(prune-commands model init-state %))
+            (all-drop1 commands)))))))
 
 (defn commands
   ([model state num-elements]
