@@ -1,9 +1,12 @@
+;; Copyright © 2024 Vouch.io LLC
+
 (ns fugato.test-impl
   (:require [clojure.test :as test :refer [deftest is]]
             [clojure.test.check.rose-tree :as rose]
             [clojure.test.check.rose-tree :as rose-tree]
             [fugato.impl :as impl]
-            [fugato.test-state-gen :as state]))
+            [fugato.test-state-gen :as state]
+            [fugato.util :as util]))
 
 (def init-state
   {:user-a  #{}
@@ -50,4 +53,21 @@
     (map rose/root
       (tree-seq (fn [x] (seq (rose/children x))) rose/children
         (impl/commands-rose state/model init-state commands 1))))
+
+  (def bad-commands
+    '({:command :take-key, :args [:user-a]}
+      {:command :unlock-door, :args [:user-a]}
+      {:command :drop-key, :args [:user-a]}
+      {:command :open-door, :args [:user-b]}
+      {:command :move, :args [:user-a :room-2]}
+      {:command :move, :args [:user-b :room-1]}))
+
+  (pprint
+    (util/flatten (impl/commands-rose state/model init-state bad-commands 1)))
+  ;; the above prints the minimal case
+  [{:command :take-key, :args [:user-a]}
+   {:command :unlock-door, :args [:user-a]}
+   {:command :open-door, :args [:user-b]}
+   {:command :move, :args [:user-b :room-1]}]
+
   )
