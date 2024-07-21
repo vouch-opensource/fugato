@@ -3,8 +3,8 @@
 (ns fugato.test-room-world
   (:require [clojure.test :as test :refer [deftest is]]
             [clojure.test.check :as test.check]
-            [clojure.test.check.properties :as prop]
             [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop]
             [clojure.test.check.generators :as gen]
             [fugato.core :as fugato]
             [fugato.test-state-gen :as fugato.state-gen :refer [model]]))

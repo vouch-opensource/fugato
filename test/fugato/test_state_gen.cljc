@@ -2,9 +2,7 @@
 
 (ns fugato.test-state-gen
   (:require [clojure.test :as test :refer [deftest is]]
-            [clojure.test.check.generators :as gen]
-            [fugato.core :as fugato]
-            [fugato.impl :as fugato.impl]))
+            [clojure.test.check.generators :as gen]))
 
 ;; =============================================================================
 ;; The State
