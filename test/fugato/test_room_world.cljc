@@ -181,15 +181,6 @@
   (test.check/quick-check 10 state-eq
     :seed 1721227011247)
 
-  (gen/generate (fugato/commands model world 1))
-  (gen/generate (gen/vector gen/int 2) )
-
-  (let [xs     (last (gen/sample (fugato/commands model world 10 20) 10))
-        world' (run world xs)]
-    (println world' (-> xs last meta :after)))
-
-  (gen/generate gen/int 200000 1721219543681)
-
-  (gen/generate (gen/vector gen/int 2 50))
+  (pprint (gen/generate (fugato/commands model world)))
 
   )
