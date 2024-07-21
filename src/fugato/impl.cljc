@@ -52,23 +52,17 @@
 (defn prune-commands*
   [model init-state commands]
   (reduce
-    (fn [ret command]
+    (fn [{:keys [state] :as ret} command]
       (let [{:keys [valid? next-state] :as command-spec} (get model (:command command))]
         (assert (some? command-spec)
           (str "Command spec " command-spec " does not exist"))
         (cond
-          ;; command-spec supplied valid? predicate & validated
-          (and valid? (valid? (:state ret) command))
-          (-> ret
-            (update :state #(next-state % command))
-            (update :commands conj command))
-
-          ;; command-spec didn't supply a valid? predicate
-          ;; just run
-          (not valid?)
-          (-> ret
-            (update :state #(next-state % command))
-            (update :commands conj command))
+          ;; either nothing to check or we passed
+          (or (not valid?) (valid? state command))
+          (let [state' (next-state state command)]
+            (-> ret
+              (assoc :state state')
+              (update :commands conj (with-meta command {:before state :after state'}))))
 
           ;; skip
           :else ret)))
