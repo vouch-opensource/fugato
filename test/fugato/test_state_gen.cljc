@@ -61,7 +61,8 @@
 ;; The Model
 
 (def open-spec
-  {:run?       (fn [state] (door-closed? state))
+  {:freq       2
+   :run?       (fn [state] (door-closed? state))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :open))
    :valid?     (fn [state command] (door-closed? state))})
@@ -81,7 +82,8 @@
                  (door-closed-and-user-has-key? state user))})
 
 (def unlock-spec
-  {:run?       (fn [state] (and (some-user-with-key? state)
+  {:freq       2
+   :run?       (fn [state] (and (some-user-with-key? state)
                                 (door-locked? state)))
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :closed))
