@@ -50,3 +50,15 @@
      (gen/sized #(gen/choose min-elements (+ min-elements %)))
      (fn [num-elements]
        (impl/commands model init-state num-elements min-shrink)))))
+
+(defn execute
+  "Given a model, an initial state, and a sequence of commands execute them
+  and return the final state."
+  ([model init-state commands]
+   (reduce
+     (fn [state {:keys [command] :as the-command}]
+       (let [command-spec (get model command)]
+         (if command-spec
+           ((:next-state command-spec) state command)
+           (throw (ex-info (str "Unknown command" command) the-command)))))
+     init-state commands)))
