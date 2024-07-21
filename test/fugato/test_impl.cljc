@@ -1,8 +1,8 @@
 ;; Copyright © 2024 Vouch.io LLC
 
 (ns fugato.test-impl
-  (:require [clojure.spec.gen.alpha :as gen]
-            [clojure.test :as test :refer [deftest is]]
+  (:require [clojure.test :as test :refer [deftest is]]
+            [clojure.test.check.generators :as gen]
             [clojure.test.check.rose-tree :as rose]
             [fugato.core :as fugato]
             [fugato.impl :as impl]
