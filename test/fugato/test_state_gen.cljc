@@ -1,7 +1,8 @@
 ;; Copyright © 2024 Vouch.io LLC
 
 (ns fugato.test-state-gen
-  (:require [clojure.test.check.generators :as gen]
+  (:require [clojure.test :as test :refer [deftest is]]
+            [clojure.test.check.generators :as gen]
             [fugato.core :as fugato]
             [fugato.impl :as fugato.impl]))
 
@@ -143,3 +144,18 @@
    :take-key    take-key-spec
    :drop-key    drop-key-spec
    :move        move-spec})
+
+;; =============================================================================
+;; Test the model
+
+(deftest test-take-drop
+  (let [state (-> init-state
+                ((-> model :take-key :next-state) {:command :take-key :args [:user-a]})
+                ((-> model :drop-key :next-state) {:command :drop-key :args [:user-a]}))]
+    (is (= state init-state))))
+
+(comment
+
+  (test/run-tests)
+
+  )
