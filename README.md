@@ -29,7 +29,7 @@ the specifics of the API permits the efficient generation of long command
 sequences without needing to adopt sophisticated search strategies.
 
 Once the command sequence is generated these be can run however you see fit.
-In this sense fugato is not a testing framework or even a methodology. It simply
+In this sense, fugato is not a testing framework or even a methodology. It simply
 generates commands and supports shrinking. The user can leverage existing
 testing tools without having to learn new concepts beyond the task of command 
 generation.
@@ -75,7 +75,7 @@ the next state.
 generated. Instead of randomly generating commands, you can inspect the state
 and control which commands are available at each step.
 
-`:valid?` - A function that takes state and a command a determines whether a command
+`:valid?` - A function that takes state and a command that determines whether a command
 should discard during shrinking (the process by which a minimal failing command
 sequence is discovered) During shrinking commands are dropped one by one. This 
 function is used determine whether later commands are no longer valid if a prior 
