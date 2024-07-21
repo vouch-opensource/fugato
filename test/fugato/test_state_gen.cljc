@@ -53,6 +53,10 @@
   (and (door-closed? state)
        (contains? (get state user) :key)))
 
+(defn door-locked-and-user-has-key? [state user]
+  (and (door-locked? state)
+       (contains? (get state user) :key)))
+
 ;; =============================================================================
 ;; The Model
 
@@ -82,7 +86,7 @@
    :args       (fn [state] (gen/tuple (gen/return (user-with-key state))))
    :next-state (fn [state _] (assoc state :door :closed))
    :valid?     (fn [state {[user] :args :as command}]
-                 (door-closed-and-user-has-key? state user))})
+                 (door-locked-and-user-has-key? state user))})
 
 (def take-key-spec
   {:run?       (fn [state] (user-and-key-in-same-room? state))
