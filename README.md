@@ -10,6 +10,7 @@ There are already a couple existing libraries for doing stateful property based
 testing in Clojure:
 
 * [stateful-check](https://github.com/czan/stateful-check/tree/master)
+* [fsm-test-check](https://github.com/bsless/fsm-test-check)
 * [states](https://github.com/jstepien/states)
 
 These libraries are to varying degrees inspired by features available in
