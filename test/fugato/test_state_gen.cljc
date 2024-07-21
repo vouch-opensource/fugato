@@ -2,7 +2,8 @@
 
 (ns fugato.test-state-gen
   (:require [clojure.test :as test :refer [deftest is]]
-            [clojure.test.check.generators :as gen]))
+            [clojure.test.check.generators :as gen]
+            [fugato.core :as fugato]))
 
 ;; =============================================================================
 ;; The State
@@ -151,6 +152,12 @@
                 ((-> model :take-key :next-state) {:command :take-key :args [:user-a]})
                 ((-> model :drop-key :next-state) {:command :drop-key :args [:user-a]}))]
     (is (= state init-state))))
+
+(deftest test-execute
+  (let [commands [{:command :take-key :args [:user-a]}
+                  {:command :drop-key :args [:user-a]}]]
+    (is (= init-state
+           (fugato/execute model init-state commands)))))
 
 (comment
 
