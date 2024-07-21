@@ -162,7 +162,9 @@
     (fn [state {:keys [command args]}]
       (if-let [fn (get command->fn command)]
         (apply fn state args)
-        (throw (Exception. (str "Unknown command: " command ", args:" args)))))
+        (throw
+          (ex-info (str "Unknown command: " command ", args:" args)
+            {:command command :arg args}))))
     state commands))
 
 (def state-eq
@@ -182,5 +184,7 @@
     :seed 1721227011247)
 
   (pprint (gen/generate (fugato/commands model world)))
+
+
 
   )

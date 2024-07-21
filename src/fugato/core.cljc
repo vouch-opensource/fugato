@@ -53,12 +53,12 @@
 
 (defn execute
   "Given a model, an initial state, and a sequence of commands execute them
-  and return the final state."
+  "
   ([model init-state commands]
    (reduce
      (fn [state {:keys [command] :as the-command}]
        (let [command-spec (get model command)]
          (if command-spec
-           ((:next-state command-spec) state command)
+           ((:next-state command-spec) state the-command)
            (throw (ex-info (str "Unknown command" command) the-command)))))
      init-state commands)))
