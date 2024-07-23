@@ -1,7 +1,7 @@
 ;; Copyright © 2024 Vouch.io LLC
 
 (ns fugato.test-room-world
-  (:require [clojure.test :as test :refer [deftest is]]
+  (:require [clojure.test :as test :refer [deftest is testing]]
             [clojure.test.check :as test.check]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.properties :as prop]
@@ -149,13 +149,13 @@
 ;; Property Tests
 
 (def command->fn
-  {:open-door   open-door
-   :close-door  close-door
-   :lock-door   lock-door
-   :unlock-door unlock-door
-   :take-key    take-key
-   :drop-key    drop-key
-   :move        move})
+  {:open-door   #'open-door
+   :close-door  #'close-door
+   :lock-door   #'lock-door
+   :unlock-door #'unlock-door
+   :take-key    #'take-key
+   :drop-key    #'drop-key
+   :move        #'move})
 
 (defn run [state commands]
   (reduce
@@ -172,6 +172,44 @@
     (= (run world commands) (-> commands last meta :after))))
 
 (defspec model-eq-reality 10 state-eq)
+
+(defn broken-lock-door [world user]
+  (cond-> world
+    (and (door-closed? world)
+         (has-key? world user))
+    world #_(assoc :door :locked)))
+
+(defmacro with-broken-lock-door [& body]
+  (with-meta
+    `(with-redefs [lock-door broken-lock-door]
+       ~@body)
+    (meta &form)))
+
+(def broken-state-eq
+  (prop/for-all [commands (fugato/commands model world 10 1)]
+    (= (with-broken-lock-door (run world commands))
+       (-> commands last meta :after))))
+
+(deftest broken-model-eq-reality
+
+  (testing
+
+    "Buggy state transitions in the \"real\" implementation are exposed in
+     generative tests against the model with minimal error cases after shrinking."
+
+    (let [{:keys [pass?
+                  shrunk]}
+          (test.check/quick-check 25 broken-state-eq)
+
+          {:keys [smallest]} shrunk]
+
+      (is (false? pass?))
+      ;; Initially :user-a and :key are both in :room-1 and the door is :locked;
+      ;; to expose the bug, :user-a must pick up the key, unlock the door so
+      ;; that the action of locking it again becomes accessible, and then
+      ;; actually try to lock it again.
+      (is (= [:take-key :unlock-door :lock-door]
+             (map :command (first smallest)))))))
 
 (comment
 
