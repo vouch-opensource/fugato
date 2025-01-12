@@ -62,7 +62,7 @@
 
 (def open-spec
   {:freq       2
-   :run?       (fn [state] (door-closed? state))
+   :run-freq   (fn [state] (if (door-closed? state) 1 0))
    :args       (fn [state] (gen/tuple (gen/elements [:user-a :user-b])))
    :next-state (fn [state command] (assoc state :door :open))
    :valid?     (fn [state command] (door-closed? state))})

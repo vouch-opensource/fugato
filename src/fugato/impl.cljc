@@ -20,26 +20,28 @@
 
 (defn freqs
   "Compute a likelihood for a command."
-  [model state {:keys [command] :as new-command}]
-  [(get-in model [command :freq] base-freq)
-   (command-spec->gen model state new-command)])
+  [model state {:keys [freq] :as new-command}]
+  [freq (command-spec->gen model state new-command)])
 
-(defn run?
+(defn run-freq
   "Check that a command with the current state is runnable"
   [model state command]
-  (if-let [run? (get-in model [command :run?])]
-    (run? state)
-    true))
+  (if-let [run-freq (get-in model [command :run-freq])]
+    (run-freq state)
+    (if-let [run? (get-in model [command :run?])]
+      (if (run? state) base-freq 0)
+      base-freq)))
 
 (defn model->commands
   "Convert a model into a vector of commands for generation"
   [model state]
   (reduce
-    (fn [acc command-name]
-      (if (run? model state command-name)
-        (conj acc {:command command-name})
-        acc))
-    [] (keys model)))
+   (fn [acc command-name]
+     (let [freq (run-freq model state command-name)]
+       (if (pos? freq)
+         (conj acc {:command command-name :freq freq})
+         acc)))
+   [] (keys model)))
 
 (defn all-drop1
   "Lazy returns all versions of xs minus one element"
@@ -80,20 +82,21 @@
   ;; needs to be evaluated
   (let [commands (model->commands model state)]
     (if (seq commands)
-      (gen/frequency (into [] (map #(freqs model state %)) commands))
+      (gen/frequency (mapv #(freqs model state %) commands))
       (gen/return nil))))
 
 (defn commands-rose
   [model init-state commands min-elements]
   (when (seq commands)
-    (rose/make-rose commands
-      (when (> (count commands) min-elements)
-        (remove nil?
-          (map
-            (comp
-              #(commands-rose model init-state % min-elements)
-              #(prune-commands model init-state %))
-            (all-drop1 commands)))))))
+    (rose/make-rose
+     commands
+     (when (> (count commands) min-elements)
+       (remove nil?
+               (map
+                (comp
+                 #(commands-rose model init-state % min-elements)
+                 #(prune-commands model init-state %))
+                (all-drop1 commands)))))))
 
 (defn commands
   ([model state num-elements]
