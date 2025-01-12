@@ -112,7 +112,11 @@
                (fn [rose]
                  (commands-rose model state
                    (conj (rose/root rose)
-                     (with-meta command {:before state :after state'}))
+                         (with-meta command {:before (with-meta state nil)
+                                             :after  (with-meta state' nil)}))
                    min-elements))
-               (commands model state' (dec num-elements) min-elements)))
+               (commands model
+                         (with-meta state' {:previous-command command})
+                         (dec num-elements)
+                         min-elements)))
            (gen/return '())))))))
